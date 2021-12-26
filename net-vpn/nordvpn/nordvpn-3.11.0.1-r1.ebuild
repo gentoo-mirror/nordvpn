@@ -58,6 +58,9 @@ src_install() {
 	if use ipsymlink ; then
 		dosym /bin/ip /sbin/ip
 	fi
+
+	insinto /usr/lib/tmpfiles.d
+	doins "${FILESDIR}/nordvpn.conf"
 }
 
 pkg_postinst (){
