@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit unpacker
+inherit unpacker xdg-utils tmpfiles
 
 MY_PV=$(ver_rs 3 '-')
 
@@ -29,8 +29,8 @@ S="${WORKDIR}"
 src_unpack() {
 	# Unpack Debian package containing application's files
 	unpack_deb ${A}
-	gzip "${S}"/usr/share/doc/nordvpn/changelog.gz -d "${S}"
-	gzip "${S}"/usr/share/man/man1/nordvpn.1.gz -d "${S}"
+	gzip "${S}"/usr/share/doc/nordvpn/changelog.gz -d
+	gzip "${S}"/usr/share/man/man1/nordvpn.1.gz -d
 }
 
 src_install() {
@@ -38,6 +38,7 @@ src_install() {
 
 #   doinitd>etc/init.d/nordvpn
 	newinitd "${FILESDIR}/nordvpn.initd" ${PN}
+#	doinitd etc/init.d/nordvpn
 
 #   into<-->/usr
 	dobin usr/bin/nordvpn
@@ -49,8 +50,11 @@ src_install() {
 	fowners root:nordvpn /var/lib/nordvpn/openvpn
 	fperms 0550 /var/lib/nordvpn/openvpn
 
-	insinto /usr/share/bash-completion/completions
-	doins usr/share/bash-completion/completions/nordvpn
+	insinto /usr/share/
+	doins -r usr/share/applications
+	doins -r usr/share/zsh
+	doins -r usr/share/bash-completion
+	doins -r usr/share/icons
 
 	dodoc usr/share/doc/nordvpn/changelog
 	doman usr/share/man/man1/nordvpn.1
@@ -59,12 +63,19 @@ src_install() {
 		dosym /bin/ip /sbin/ip
 	fi
 
-	insinto /usr/lib/tmpfiles.d
-	doins "${FILESDIR}/nordvpn.conf"
+	dotmpfiles "${FILESDIR}/nordvpn.conf"
 }
 
 pkg_postinst (){
 	if use !ipsymlink ; then
 		elog "nordvpnd expects to find ip command in /sbin folder iproute2 package installs it in /bin please make sure to create a symlink: ln -s /bin/ip /sbin/ip"
-	fi
+    fi
+	xdg_desktop_database_update
+	xdg_icon_cache_update
+	tmpfiles_process nordvpn.conf
+}
+
+pkg_postrm (){
+	xdg_desktop_database_update
+	xdg_icon_cache_update
 }
