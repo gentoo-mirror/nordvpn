@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit unpacker xdg-utils tmpfiles
+inherit unpacker xdg-utils tmpfiles systemd
 
 MY_PV=$(ver_rs 3 '-')
 
@@ -34,11 +34,14 @@ src_unpack() {
 }
 
 src_install() {
-	cd ${S}
+	cd "${S}"
 
 #   doinitd>etc/init.d/nordvpn
 	newinitd "${FILESDIR}/nordvpn.initd" ${PN}
 #	doinitd etc/init.d/nordvpn
+	systemd_dounit usr/lib/systemd/system/nord{fileshare,vpn}d.{service,socket}
+	systemd_douserunit usr/lib/systemd/user/nordfileshared.{service,socket}
+
 
 #   into<-->/usr
 	dobin usr/bin/nordvpn
@@ -69,7 +72,7 @@ src_install() {
 pkg_postinst (){
 	if use !ipsymlink ; then
 		elog "nordvpnd expects to find ip command in /sbin folder iproute2 package installs it in /bin please make sure to create a symlink: ln -s /bin/ip /sbin/ip"
-    fi
+	fi
 	xdg_desktop_database_update
 	xdg_icon_cache_update
 	tmpfiles_process nordvpn.conf
