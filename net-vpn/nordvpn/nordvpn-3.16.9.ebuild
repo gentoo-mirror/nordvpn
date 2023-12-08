@@ -29,21 +29,19 @@ S="${WORKDIR}"
 src_unpack() {
 	# Unpack Debian package containing application's files
 	unpack_deb ${A}
-	gzip "${S}"/usr/share/doc/nordvpn/changelog.gz -d
+	gzip "${S}"/usr/share/doc/nordvpn/changelog.Debian.gz -d
 	gzip "${S}"/usr/share/man/man1/nordvpn.1.gz -d
 }
 
 src_install() {
 	cd "${S}"
 
-#   doinitd>etc/init.d/nordvpn
 	newinitd "${FILESDIR}/nordvpn.initd" ${PN}
-#	doinitd etc/init.d/nordvpn
+
 	systemd_dounit usr/lib/systemd/system/nord{fileshare,vpn}d.{service,socket}
 	systemd_douserunit usr/lib/systemd/user/nordfileshared.{service,socket}
 
 
-#   into<-->/usr
 	dobin usr/bin/nordvpn
 	dosbin usr/sbin/nordvpnd
 
@@ -59,7 +57,7 @@ src_install() {
 	doins -r usr/share/bash-completion
 	doins -r usr/share/icons
 
-	dodoc usr/share/doc/nordvpn/changelog
+	dodoc  usr/share/doc/nordvpn/changelog.Debian
 	doman usr/share/man/man1/nordvpn.1
 
 	if use ipsymlink ; then
