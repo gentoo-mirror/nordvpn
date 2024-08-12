@@ -49,6 +49,10 @@ src_install() {
 	insinto /usr/lib/
 	doins -r usr/lib/nordvpn
 
+	fowners root:nordvpn /usr/lib/nordvpn/norduserd
+	fperms 0550 /usr/lib/nordvpn/norduserd
+	fowners root:nordvpn /usr/lib/nordvpn/nordfileshare
+	fperms 0550 /usr/lib/nordvpn/nordfileshare
 	fowners root:nordvpn /usr/lib/nordvpn/openvpn
 	fperms 0550 /usr/lib/nordvpn/openvpn
 
