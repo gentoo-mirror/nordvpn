@@ -9,7 +9,7 @@ MY_PV=$(ver_rs 3 '-')
 
 DESCRIPTION="NordVPN native client"
 HOMEPAGE="https://nordvpn.com https://gitlab.com/lahouari.dc/nordvpn"
-SRC_URI="https://repo.nordvpn.com/deb/nordvpn/debian/pool/main/nordvpn_${MY_PV}_amd64.deb"
+SRC_URI="https://repo.nordvpn.com/deb/nordvpn/debian/pool/main/n/nordvpn/nordvpn_${MY_PV}_amd64.deb"
 
 LICENSE="NordVPN"
 SLOT="0"
@@ -18,6 +18,11 @@ KEYWORDS="-* ~amd64"
 # TODO: verify that list of RDEPEND is complete
 RDEPEND="net-misc/networkmanager
 		net-vpn/networkmanager-openvpn
+		dev-libs/libxml2
+		net-dns/libidn2
+		app-misc/ca-certificates
+		sys-process/procps
+		net-firewall/iptables
 		sys-apps/iproute2
 		acct-group/nordvpn"
 
@@ -69,6 +74,8 @@ src_install() {
 	doman usr/share/man/man1/nordvpn.1
 
 	dotmpfiles usr/lib/tmpfiles.d/nordvpn.conf
+
+	newenvd "${FILESDIR}"/nordvpn.env 99nordvpn
 }
 
 pkg_postinst (){
