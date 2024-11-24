@@ -75,7 +75,7 @@ src_install() {
 
 	dotmpfiles usr/lib/tmpfiles.d/nordvpn.conf
 
-	newenvd "${FILESDIR}"/nordvpn.env 99nordvpn
+	newenvd "${FILESDIR}"/nordvpn.env 99nordvpn 
 }
 
 pkg_postinst (){

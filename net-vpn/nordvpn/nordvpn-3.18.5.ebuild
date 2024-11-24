@@ -9,7 +9,7 @@ MY_PV=$(ver_rs 3 '-')
 
 DESCRIPTION="NordVPN native client"
 HOMEPAGE="https://nordvpn.com https://gitlab.com/lahouari.dc/nordvpn"
-SRC_URI="https://repo.nordvpn.com/deb/nordvpn/debian/pool/main/nordvpn_${MY_PV}_amd64.deb"
+SRC_URI="https://repo.nordvpn.com/deb/nordvpn/debian/pool/main/n/nordvpn/nordvpn_${MY_PV}_amd64.deb"
 
 LICENSE="NordVPN"
 SLOT="0"
