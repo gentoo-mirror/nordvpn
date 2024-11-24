@@ -1,2 +1,2 @@
 acct-group/nordvpn 0: System group: nordvpn
-net-vpn/nordvpn 3.17.0 3.18.5 3.19.0 3.19.0-r1: NordVPN native client
+net-vpn/nordvpn 3.17.0 3.18.5 3.19.0-r1 3.19.0-r2 3.19.1: NordVPN native client
