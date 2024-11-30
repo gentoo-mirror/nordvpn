@@ -8,17 +8,21 @@ inherit unpacker xdg-utils tmpfiles systemd
 MY_PV=$(ver_rs 3 '-')
 
 DESCRIPTION="NordVPN native client"
-HOMEPAGE="https://nordvpn.com"
+HOMEPAGE="https://nordvpn.com https://gitlab.com/lahouari.dc/nordvpn"
 SRC_URI="https://repo.nordvpn.com/deb/nordvpn/debian/pool/main/n/nordvpn/nordvpn_${MY_PV}_amd64.deb"
 
 LICENSE="NordVPN"
 SLOT="0"
 KEYWORDS="-* ~amd64"
-IUSE="ipsymlink"
 
 # TODO: verify that list of RDEPEND is complete
 RDEPEND="net-misc/networkmanager
 		net-vpn/networkmanager-openvpn
+		dev-libs/libxml2
+		net-dns/libidn2
+		app-misc/ca-certificates
+		sys-process/procps
+		net-firewall/iptables
 		sys-apps/iproute2
 		acct-group/nordvpn"
 
@@ -39,19 +43,23 @@ src_install() {
 #   doinitd>etc/init.d/nordvpn
 	newinitd "${FILESDIR}/nordvpn.initd" ${PN}
 #	doinitd etc/init.d/nordvpn
-	systemd_dounit usr/lib/systemd/system/nord{fileshare,vpn}d.{service,socket}
-	systemd_douserunit usr/lib/systemd/user/nordfileshared.{service,socket}
+	systemd_dounit usr/lib/systemd/system/nordvpnd.{service,socket}
+#	systemd_douserunit usr/lib/nordvpn/nordfileshared.{service,socket}
 
 
 #   into<-->/usr
 	dobin usr/bin/nordvpn
 	dosbin usr/sbin/nordvpnd
 
-	insinto /var/lib/
-	doins -r var/lib/nordvpn
+	insinto /usr/lib/
+	doins -r usr/lib/nordvpn
 
-	fowners root:nordvpn /var/lib/nordvpn/openvpn
-	fperms 0550 /var/lib/nordvpn/openvpn
+	fowners root:nordvpn /usr/lib/nordvpn/norduserd
+	fperms 0550 /usr/lib/nordvpn/norduserd
+	fowners root:nordvpn /usr/lib/nordvpn/nordfileshare
+	fperms 0550 /usr/lib/nordvpn/nordfileshare
+	fowners root:nordvpn /usr/lib/nordvpn/openvpn
+	fperms 0550 /usr/lib/nordvpn/openvpn
 
 	insinto /usr/share/
 	doins -r usr/share/applications
@@ -59,20 +67,18 @@ src_install() {
 	doins -r usr/share/bash-completion
 	doins -r usr/share/icons
 
+	insinto /var/lib/
+	doins -r var/lib/nordvpn
+
 	dodoc usr/share/doc/nordvpn/changelog.Debian
 	doman usr/share/man/man1/nordvpn.1
 
-	if use ipsymlink ; then
-		dosym /bin/ip /sbin/ip
-	fi
+	dotmpfiles usr/lib/tmpfiles.d/nordvpn.conf
 
-	dotmpfiles "${FILESDIR}/nordvpn.conf"
+	newenvd "${FILESDIR}"/nordvpn.env 99nordvpn 
 }
 
 pkg_postinst (){
-	if use !ipsymlink ; then
-		elog "nordvpnd expects to find ip command in /sbin folder iproute2 package installs it in /bin please make sure to create a symlink: ln -s /bin/ip /sbin/ip"
-	fi
 	xdg_desktop_database_update
 	xdg_icon_cache_update
 	tmpfiles_process nordvpn.conf
