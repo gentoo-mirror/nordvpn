@@ -18,6 +18,11 @@ KEYWORDS="-* ~amd64"
 # TODO: verify that list of RDEPEND is complete
 RDEPEND="net-misc/networkmanager
 		net-vpn/networkmanager-openvpn
+		dev-libs/libxml2
+		net-dns/libidn2
+		app-misc/ca-certificates
+		sys-process/procps
+		net-firewall/iptables
 		sys-apps/iproute2
 		acct-group/nordvpn"
 
@@ -69,6 +74,8 @@ src_install() {
 	doman usr/share/man/man1/nordvpn.1
 
 	dotmpfiles usr/lib/tmpfiles.d/nordvpn.conf
+
+	newenvd "${FILESDIR}"/nordvpn.env 99nordvpn 
 }
 
 pkg_postinst (){
